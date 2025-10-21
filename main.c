@@ -9,17 +9,20 @@ void	ft_process_input(GLFWwindow *window);
 
 const char	*vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;"
+"layout (location = 1) in vec3 aColor;"
+"out vec3 ourColor;"
 "void main()"
 "{"
 "	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);"
+"	ourColor = aColor;"
 "}\0";
 
 const char	*fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;"
-"uniform vec4 ourColor;"
+"in vec3 ourColor;"
 "void main()"
 "{"
-"	FragColor = ourColor;"
+"	FragColor = vec4(ourColor, 1.0);"
 "}\0";
 
 int	main()
@@ -96,15 +99,14 @@ int	main()
 	glDeleteShader(fragmentShader);
 
 	float vertices[] = {
-		 0.5f,  0.5f, 0.0f, // top right
-		 0.5f, -0.5f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f, // bottom left
-		-0.5f,  0.5f, 0.0f  // top left
+		// positions		// colors
+		 0.5f,  -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,// top right
+		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,// bottom right
+		 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f// bottom left
 	};
 
 	unsigned int	indices[] = {
-		0, 1, 3,
-		1, 2, 3
+		0, 1, 2 
 	};
 
 	unsigned int	VAO;
@@ -122,8 +124,11 @@ int	main()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // activate wireframe mode (stylax)
 
@@ -140,13 +145,15 @@ int	main()
 		// TRIIIIIIIIIIIIIAAAAAAAAAAAAAAAAAAAANNNNNNNNNNNNNGLE
 		glUseProgram(shaderProgram);
 
+		/*
 		float	time_value = glfwGetTime();
 		float	green_value = (sin(time_value) / 2.0f) + 0.5f;
 		int		vertex_color_location = glGetUniformLocation(shaderProgram, "ourColor");
 		glUniform4f(vertex_color_location, 0.0f, green_value, 0.0f, 1.0f);
+		*/
 
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		// check and call events and swap the buffers
