@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
+#include <math.h>
 
 void	ft_framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void	ft_process_input(GLFWwindow *window);
@@ -15,9 +16,10 @@ const char	*vertexShaderSource = "#version 330 core\n"
 
 const char	*fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;"
+"uniform vec4 ourColor;"
 "void main()"
 "{"
-"	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);"
+"	FragColor = ourColor;"
 "}\0";
 
 int	main()
@@ -123,7 +125,7 @@ int	main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // activate wireframe mode (stylax)
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // activate wireframe mode (stylax)
 
 	// main loop
 	while (!glfwWindowShouldClose(window))
@@ -137,6 +139,12 @@ int	main()
 
 		// TRIIIIIIIIIIIIIAAAAAAAAAAAAAAAAAAAANNNNNNNNNNNNNGLE
 		glUseProgram(shaderProgram);
+
+		float	time_value = glfwGetTime();
+		float	green_value = (sin(time_value) / 2.0f) + 0.5f;
+		int		vertex_color_location = glGetUniformLocation(shaderProgram, "ourColor");
+		glUniform4f(vertex_color_location, 0.0f, green_value, 0.0f, 1.0f);
+
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
